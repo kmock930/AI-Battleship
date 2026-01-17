@@ -38,7 +38,7 @@ export default function ModelEvalArea({models}: {models: Model[]}) {
                             <div className="mb-2 min-w-[250px]">
                                 <strong>Best Model:</strong>{" "}
                                 {evaluationResults.bestModel ? (
-                                    <strong className="text-blue-600">{String(evaluationResults.bestModel)}</strong>
+                                    <b className="text-blue-600">{String(evaluationResults.bestModel)}</b>
                                 ) : (
                                     <span className="text-gray-500">Unable to Identify</span>
                                 )}
