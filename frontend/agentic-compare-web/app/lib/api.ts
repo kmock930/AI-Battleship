@@ -49,8 +49,8 @@ export async function getModelEvaluationResults(models: Model[]): Promise<any> {
   const bestModelName = Object.entries(selectedModelResults).reduce((best, [modelName, result]) => {
     if (!best) return modelName;
     const bestResult = selectedModelResults[best];
-    const resultTime = parseInt(result.responseTime);
-    const bestTime = parseInt(bestResult.responseTime);
+    const resultTime = parseFloat(result.responseTime);
+    const bestTime = parseFloat(bestResult.responseTime);
     
     if (resultTime < bestTime ||
         (resultTime === bestTime && result.outputTokens < bestResult.outputTokens)) {
