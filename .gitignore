@@ -1,2 +1,11 @@
-*.env
-*venv/
+# Ignore all pycache and pyc files
+**/__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Sensitive data
+.env
