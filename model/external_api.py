@@ -69,7 +69,6 @@ def call_gemini(base_prompt: str, user_prompt: str, model_name: str = "gemini-2.
 
 # Call YellowCake - for automating/scraping info from specified URL(s)
 def call_yellowcake(url: str, user_prompt: str):
-    from google import genai
     from dotenv import load_dotenv
     import requests
     import os
