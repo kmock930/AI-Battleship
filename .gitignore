@@ -3,9 +3,8 @@
 *.pyc
 
 # Virtual environments
-venv/
-.venv/
-env/
+*venv/
+.env
 
 # Sensitive data
 .env
