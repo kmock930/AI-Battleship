@@ -16,7 +16,7 @@ export default function PromptArea({handleAddModel}: {handleAddModel: () => void
         </div>
         <div className="flex-1 p-4 flex items-center">
           <textarea
-              className="w-full h-32 p-2 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full h-32 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your prompt here..."
           ></textarea>
         </div>
