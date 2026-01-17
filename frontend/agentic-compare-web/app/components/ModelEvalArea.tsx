@@ -33,9 +33,9 @@ export default function ModelEvalArea({models}: {models: Model[]}) {
                 {evaluationResults == null ? (
                     <CircularProgress />
                 ) : (
-                    <div>
+                    <div className="flex flex-wrap gap-4 max-h-[600px] overflow-y-auto">
                         {evaluationResults.bestModel !== undefined && (
-                            <div className="mb-2">
+                            <div className="mb-2 min-w-[250px]">
                                 <strong>Best Model:</strong>{" "}
                                 {evaluationResults.bestModel ? (
                                     <strong className="text-blue-600">{String(evaluationResults.bestModel)}</strong>
@@ -47,7 +47,7 @@ export default function ModelEvalArea({models}: {models: Model[]}) {
                         {Object.entries(evaluationResults)
                             .filter(([key]) => key !== "bestModel")
                             .map(([key, value]: [string, any]) => (
-                            <div key={key} className="mb-2">
+                            <div key={key} className="mb-2 min-w-[250px]">
                                 <strong>{key}:</strong>{" "}
                                 {typeof value === 'object' && value !== null ? (
                                     <div style={{ marginLeft: '1em' }}>
