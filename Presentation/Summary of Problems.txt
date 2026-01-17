@@ -1,0 +1,6 @@
+Problems encountered:
+- Yellowcake api server issues
+	- Because it is in an event-driven architecture, it takes a long while to get to the final response, and thus, latency in our backend becomes an issue. 
+	- It is difficult to parse all those logs with a mixture of event's status strings and JSON objects. The way we parsed in our code will not work even if YellowCake API tweaked a small thing in their response, causing fragility.
+- Flask does not handle multiple api requests properly
+	- switched to Fast api for asynchronous api requests
