@@ -6,3 +6,6 @@
 * A button launching the brainstorming.
 * Middle of the page: Split into 2 sides, with each a model's response.
 * Metrics showing at the bottom of the page, like duration taken for the response to get generated.
+
+## Tech Stack
+Next (TypeScript), Tailwind CSS, Material UI
