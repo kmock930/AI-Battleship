@@ -1,0 +1,4 @@
+Problems encountered:
+- Yellowcake api server issues
+- Flask does not handle multiple api requests properly
+	- switched to Fast api for asynchronous api requests
