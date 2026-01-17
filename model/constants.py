@@ -1,0 +1,1 @@
+YELLOWCAKE_URL = "https://api.yellowcake.dev/v1/extract-stream"
