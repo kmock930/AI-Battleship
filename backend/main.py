@@ -40,7 +40,7 @@ async def stream_aggregator(prompt: str, models: List[str]):
 
     # Create concurrent tasks for all selected models
     tasks = [
-        asyncio.create_task(ask_openrouter(prompt, model=m)) 
+        asyncio.create_task(ask_openrouter(prompt, model=m if m is not None or m != "" else "openrouter/auto")) 
         for m in models
     ]
 
@@ -70,6 +70,36 @@ async def compare_endpoint(request_data: CompareRequest):
         stream_aggregator(request_data.prompt, request_data.models),
         media_type="text/event-stream"
     )
+
+# 4. An Endpoint to List Available Models
+@app.get("/models")
+def list_models():
+    """
+    Returns a list of available models from OpenRouter.
+    """
+    return {"models": [
+        {"label": "GPT 4o", "value": "openai/gpt-4o"},
+        {"label": "GPT 4o Mini", "value": "openai/gpt-4o-mini"},
+        {"label": "O1 Preview", "value": "openai/o1-preview"},
+        {"label": "GPT 4 Turbo", "value": "openai/gpt-4-turbo"},
+        {"label": "Claude 3.5 Sonnet", "value": "anthropic/claude-3.5-sonnet"},
+        {"label": "Claude 3 Opus", "value": "anthropic/claude-3-opus"},
+        {"label": "Claude 3 Haiku", "value": "anthropic/claude-3-haiku"},
+        {"label": "Gemini Pro 1.5", "value": "google/gemini-pro-1.5"},
+        {"label": "Gemini Flash 1.5", "value": "google/gemini-flash-1.5"},
+        {"label": "LLaMA 3.1 405B Instruct", "value": "meta-llama/llama-3.1-405b-instruct"},
+        {"label": "LLaMA 3.1 70B Instruct", "value": "meta-llama/llama-3.1-70b-instruct"},
+        {"label": "LLaMA 3.1 8B Instruct", "value": "meta-llama/llama-3.1-8b-instruct"},
+        {"label": "Mistral Large 2407", "value": "mistralai/mistral-large-2407"},
+        {"label": "DeepSeek Chat", "value": "deepseek/deepseek-chat"},
+        {"label": "DeepSeek Coder", "value": "deepseek/deepseek-coder"},
+        {"label": "Mistral 7B Instruct (Free)", "value": "mistralai/mistral-7b-instruct:free"},
+        {"label": "Phi 3 Mini 128k Instruct (Free)", "value": "microsoft/phi-3-mini-128k-instruct:free"},
+        {"label": "OpenRouter Auto", "value": "openrouter/auto"},
+        {"label": "Google Gemini 2.0 Flash (Free - Direct API)", "value": "google-direct/gemini-2.0-flash-exp"},
+        {"label": "Google Gemini 1.5 Flash (Free - Direct API)", "value": "google-direct/gemini-1.5-flash"},
+        {"label": "YellowCake API (For Automation)", "value": "YellowCake"}  # Placeholder for custom models
+    ]}
 
 if __name__ == "__main__":
     import uvicorn

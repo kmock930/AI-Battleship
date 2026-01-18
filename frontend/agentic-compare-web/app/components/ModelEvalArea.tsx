@@ -6,20 +6,25 @@ import { Model } from "../lib/api";
 
 import { getModelEvaluationResults } from "../lib/api";
 
-export default function ModelEvalArea({models}: {models: Model[]}) {
+interface ModelEvalAreaProps {
+  models: Model[];
+  realMetrics: Record<string, { responseTime: number; outputTokens: number }>;
+}
+
+export default function ModelEvalArea({models, realMetrics}: ModelEvalAreaProps) {
   
   const [evaluationResults, setEvaluationResults] = useState<Record<string, any> | null>(null);
 
   useEffect(() => {
     async function fetchEvaluationResults() {
-      const results = await getModelEvaluationResults(models);
+      const results = await getModelEvaluationResults(models, realMetrics);
       setEvaluationResults(results);
     }
 
     if (models.length > 0) {
       fetchEvaluationResults();
     }
-  }, [models]);
+  }, [models, JSON.stringify(realMetrics)]);
 
   return (
     <Grid>
