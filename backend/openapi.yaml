@@ -93,6 +93,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationError'
 
+  /models:
+    get:
+      summary: List available models
+      description: |
+        Returns a list of all available LLM models that can be used with the /compare endpoint.
+        This includes models from OpenRouter (OpenAI, Anthropic, Google, Meta, Mistral, DeepSeek, etc.)
+        and the special "openrouter/auto" option that automatically selects the best model.
+      operationId: listModels
+      responses:
+        '200':
+          description: Successfully retrieved list of available models
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelsResponse'
+              example:
+                models:
+                  - "openai/gpt-4o"
+                  - "openai/gpt-4o-mini"
+                  - "openai/o1-preview"
+                  - "anthropic/claude-3.5-sonnet"
+                  - "google/gemini-pro-1.5"
+                  - "meta-llama/llama-3.1-405b-instruct"
+                  - "mistralai/mistral-large-2407"
+                  - "deepseek/deepseek-chat"
+                  - "openrouter/auto"
+
 components:
   schemas:
     CompareRequest:
@@ -149,6 +176,21 @@ components:
             - "Model response timed out." (after 30 seconds)
             - "Internal Server Error"
           example: "Model response timed out."
+    
+    ModelsResponse:
+      type: object
+      properties:
+        models:
+          type: array
+          description: List of available model identifiers
+          items:
+            type: string
+          example:
+            - "openai/gpt-4o"
+            - "openai/gpt-4o-mini"
+            - "anthropic/claude-3.5-sonnet"
+            - "google/gemini-pro-1.5"
+            - "openrouter/auto"
     
     ValidationError:
       type: object

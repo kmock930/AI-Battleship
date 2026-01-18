@@ -40,7 +40,7 @@ async def stream_aggregator(prompt: str, models: List[str]):
 
     # Create concurrent tasks for all selected models
     tasks = [
-        asyncio.create_task(ask_openrouter(prompt, model=m)) 
+        asyncio.create_task(ask_openrouter(prompt, model=m if m is not None or m != "" else "openrouter/auto")) 
         for m in models
     ]
 
@@ -70,6 +70,33 @@ async def compare_endpoint(request_data: CompareRequest):
         stream_aggregator(request_data.prompt, request_data.models),
         media_type="text/event-stream"
     )
+
+# 4. An Endpoint to List Available Models
+@app.get("/models")
+def list_models():
+    """
+    Returns a list of available models from OpenRouter.
+    """
+    return {"models": [
+        "openai/gpt-4o",
+        "openai/gpt-4o-mini",
+        "openai/o1-preview",
+        "openai/gpt-4-turbo",
+        "anthropic/claude-3.5-sonnet",
+        "anthropic/claude-3-opus",
+        "anthropic/claude-3-haiku",
+        "google/gemini-pro-1.5",
+        "google/gemini-flash-1.5",
+        "meta-llama/llama-3.1-405b-instruct",
+        "meta-llama/llama-3.1-70b-instruct",
+        "meta-llama/llama-3.1-8b-instruct",
+        "mistralai/mistral-large-2407",
+        "deepseek/deepseek-chat",
+        "deepseek/deepseek-coder",
+        "mistralai/mistral-7b-instruct:free",
+        "microsoft/phi-3-mini-128k-instruct:free",
+        "openrouter/auto"
+    ]}
 
 if __name__ == "__main__":
     import uvicorn
