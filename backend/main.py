@@ -78,24 +78,25 @@ def list_models():
     Returns a list of available models from OpenRouter.
     """
     return {"models": [
-        "openai/gpt-4o",
-        "openai/gpt-4o-mini",
-        "openai/o1-preview",
-        "openai/gpt-4-turbo",
-        "anthropic/claude-3.5-sonnet",
-        "anthropic/claude-3-opus",
-        "anthropic/claude-3-haiku",
-        "google/gemini-pro-1.5",
-        "google/gemini-flash-1.5",
-        "meta-llama/llama-3.1-405b-instruct",
-        "meta-llama/llama-3.1-70b-instruct",
-        "meta-llama/llama-3.1-8b-instruct",
-        "mistralai/mistral-large-2407",
-        "deepseek/deepseek-chat",
-        "deepseek/deepseek-coder",
-        "mistralai/mistral-7b-instruct:free",
-        "microsoft/phi-3-mini-128k-instruct:free",
-        "openrouter/auto"
+        {"label": "GPT 4o", "value": "openai/gpt-4o"},
+        {"label": "GPT 4o Mini", "value": "openai/gpt-4o-mini"},
+        {"label": "O1 Preview", "value": "openai/o1-preview"},
+        {"label": "GPT 4 Turbo", "value": "openai/gpt-4-turbo"},
+        {"label": "Claude 3.5 Sonnet", "value": "anthropic/claude-3.5-sonnet"},
+        {"label": "Claude 3 Opus", "value": "anthropic/claude-3-opus"},
+        {"label": "Claude 3 Haiku", "value": "anthropic/claude-3-haiku"},
+        {"label": "Gemini Pro 1.5", "value": "google/gemini-pro-1.5"},
+        {"label": "Gemini Flash 1.5", "value": "google/gemini-flash-1.5"},
+        {"label": "LLaMA 3.1 405B Instruct", "value": "meta-llama/llama-3.1-405b-instruct"},
+        {"label": "LLaMA 3.1 70B Instruct", "value": "meta-llama/llama-3.1-70b-instruct"},
+        {"label": "LLaMA 3.1 8B Instruct", "value": "meta-llama/llama-3.1-8b-instruct"},
+        {"label": "Mistral Large 2407", "value": "mistralai/mistral-large-2407"},
+        {"label": "DeepSeek Chat", "value": "deepseek/deepseek-chat"},
+        {"label": "DeepSeek Coder", "value": "deepseek/deepseek-coder"},
+        {"label": "Mistral 7B Instruct (Free)", "value": "mistralai/mistral-7b-instruct:free"},
+        {"label": "Phi 3 Mini 128k Instruct (Free)", "value": "microsoft/phi-3-mini-128k-instruct:free"},
+        {"label": "OpenRouter Auto", "value": "openrouter/auto"},
+        {"label": "YellowCake API (For Automation)", "value": "YellowCake"}  # Placeholder for custom models
     ]}
 
 if __name__ == "__main__":
