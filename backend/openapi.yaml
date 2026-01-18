@@ -1,0 +1,168 @@
+openapi: 3.0.3
+info:
+  title: LLM Side-by-Side Aggregator
+  description: |
+    API for comparing multiple LLM model responses side-by-side.
+    Streams responses from multiple models concurrently and returns results as they complete.
+  version: 1.0.0
+  contact:
+    name: API Support
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /compare:
+    post:
+      summary: Compare LLM responses
+      description: |
+        Submits a prompt to multiple LLM models concurrently and streams back responses
+        as they complete. Returns Server-Sent Events (SSE) with each model's response.
+        
+        **Special Model Types:**
+        - **YellowCake Models**: Any model identifier containing "yellowcake" (case-insensitive) 
+          triggers special URL extraction and web scraping functionality. The system will:
+          1. Extract and validate URLs from the prompt
+          2. Use the first valid URL found
+          3. Call the YellowCake API to scrape and process the webpage content
+          4. Return scraped data instead of an LLM-generated response
+          
+        **Note**: For YellowCake models, the prompt must contain at least one valid, accessible URL.
+      operationId: compareModels
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompareRequest'
+            examples:
+              standardLLMs:
+                summary: Standard LLM comparison
+                value:
+                  prompt: "What is the capital of France?"
+                  models:
+                    - "openai/gpt-3.5-turbo"
+                    - "anthropic/claude-3-haiku"
+                    - "google/gemini-pro"
+              withYellowCake:
+                summary: Mixed LLMs with YellowCake scraping
+                value:
+                  prompt: "Summarize this page: https://www.example.com/article"
+                  models:
+                    - "openai/gpt-4"
+                    - "yellowcake"
+                    - "anthropic/claude-3-sonnet"
+      responses:
+        '200':
+          description: Stream of model responses
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: |
+                  Server-Sent Events stream. Each event contains a JSON object with model response data.
+                  Format: `data: {json_object}\n\n`
+              examples:
+                successResponse:
+                  summary: Successful LLM responses
+                  value: |
+                    data: {"model": "openai/gpt-3.5-turbo", "response": "The capital of France is Paris."}
+                    
+                    data: {"model": "anthropic/claude-3-haiku", "response": "Paris is the capital of France."}
+                    
+                yellowCakeResponse:
+                  summary: YellowCake scraping response
+                  value: |
+                    data: {"model": "yellowcake", "response": "title: Example Domain\nheading: Example Domain\ncontent: This domain is for use in illustrative examples..."}
+                    
+                yellowCakeError:
+                  summary: YellowCake without valid URLs
+                  value: |
+                    data: {"model": "yellowcake", "error": "No valid URLs found in the prompt."}
+                    
+                errorResponse:
+                  summary: General error response
+                  value: |
+                    data: {"model": "unknown", "error": "Internal Server Error"}
+                    
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+components:
+  schemas:
+    CompareRequest:
+      type: object
+      required:
+        - prompt
+        - models
+      properties:
+        prompt:
+          type: string
+          description: The prompt/question to send to all selected models
+          example: "What is the capital of France?"
+        models:
+          type: array
+          description: |
+            List of model identifiers to query. Supports:
+            - Standard LLM models (e.g., "openai/gpt-3.5-turbo", "anthropic/claude-3-haiku")
+            - YellowCake web scraping (any identifier containing "yellowcake")
+          items:
+            type: string
+          minItems: 1
+          example:
+            - "openai/gpt-3.5-turbo"
+            - "anthropic/claude-3-haiku"
+            - "yellowcake"
+    
+    ModelResponse:
+      type: object
+      description: |
+        Response from a single model (streamed as SSE).
+        For standard LLM models, contains the generated text response.
+        For YellowCake models, contains scraped and structured webpage data.
+      properties:
+        model:
+          type: string
+          description: The identifier of the model that generated the response
+          example: "openai/gpt-3.5-turbo"
+        response:
+          type: string
+          description: |
+            The generated text response from the model.
+            For LLM models: Natural language response to the prompt.
+            For YellowCake models: Structured data extracted from the webpage (key-value pairs).
+          example: "The capital of France is Paris."
+        timestamp:
+          type: string
+          format: date-time
+          description: When the response was generated (optional)
+        error:
+          type: string
+          description: |
+            Error message if the model request failed. Common errors:
+            - "No valid URLs found in the prompt." (YellowCake-specific)
+            - "Model response timed out." (after 30 seconds)
+            - "Internal Server Error"
+          example: "Model response timed out."
+    
+    ValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            type: object
+            properties:
+              loc:
+                type: array
+                items:
+                  type: string
+              msg:
+                type: string
+              type:
+                type: string

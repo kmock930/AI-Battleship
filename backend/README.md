@@ -6,3 +6,6 @@
     * Use the best model suggested by OpenRouter by default, unless otherwise selected (optional)
 * LLM Metrics API
 * LLM Recommendation API (optional)
+
+# Documentation
+Refer to `openapi.yaml`.
