@@ -45,26 +45,57 @@ async def ask_openrouter(user_input, model="openai/gpt-oss-20b:free"):
     """
     logger.info(f"Initiating async call for model: {model}")
 
+    # Override for Google Gemini Direct API models
+    if model.startswith("google-direct/"):
+        logger.info("Detected Google Gemini direct API model. Processing via call_gemini.")
+        try:
+            # Extract the actual model name from the identifier
+            actual_model_name = model.replace("google-direct/", "")
+            logger.info(f"Using Gemini model: {actual_model_name}")
+            
+            # Call Gemini API directly in a separate thread to avoid blocking
+            # Using empty base_prompt since this is a direct user query
+            from model.external_api import call_gemini
+            gemini_response = await asyncio.to_thread(
+                call_gemini, 
+                base_prompt="You are a helpful AI assistant. Respond to the user's query directly and naturally.",
+                user_prompt=user_input,
+                model_name=actual_model_name
+            )
+            
+            return {
+                "model": f"Google Gemini ({actual_model_name})",
+                "response": gemini_response
+            }
+        except Exception as e:
+            logger.exception(f"Error processing Google Gemini request: {str(e)}")
+            return {"model": model, "error": f"Google Gemini API error: {str(e)}"}
+
     # Override for YellowCake model
     if "yellowcake" in model.lower():
         logger.info("Detected YellowCake model. Processing differently.")
-        # Extract URLs from user input
-        urls = get_valid_urls(user_input)
-        if not urls:
-            logger.warning("No valid URLs found in user input for YellowCake.")
-            return {"model": model, "error": "No valid URLs found in the prompt."}
-        
-        # For simplicity, use the first valid URL
-        url_to_use = urls[0]
-        logger.info(f"Calling YellowCake for URL: {url_to_use}")
-        
-        # Call YellowCake API
-        yellowcake_response = call_yellowcake(url_to_use, user_input)
-        
-        return {
-            "model": model,
-            "response": yellowcake_response
-        }
+        try:
+            # Extract URLs from user input (run in thread pool since it's synchronous)
+            urls = await asyncio.to_thread(get_valid_urls, user_input)
+            if not urls:
+                logger.warning("No valid URLs found in user input for YellowCake.")
+                return {"model": model, "error": "No valid URLs found in the prompt."}
+            
+            # For simplicity, use the first valid URL
+            url_to_use = list(urls)[0]
+            logger.info(f"Calling YellowCake for URL: {url_to_use}")
+            
+            # Call YellowCake API in a separate thread to avoid blocking
+            yellowcake_response = await asyncio.to_thread(call_yellowcake, url_to_use, user_input)
+            
+            return {
+                "model": model,
+                "response": yellowcake_response
+            }
+        except Exception as e:
+            logger.exception(f"Error processing YellowCake request: {str(e)}")
+            return {"model": model, "error": f"YellowCake processing error: {str(e)}"}
+    
     
     system_instruction = (
         "Task: Respond ONLY with valid JSON.\n"
@@ -88,15 +119,19 @@ async def ask_openrouter(user_input, model="openai/gpt-oss-20b:free"):
         
         raw_response = completion.choices[0].message.content
         logger.info(f"Received raw response from {model}")
+        
+        # Get the actual model that was used (important for auto selections)
+        actual_model = completion.model if hasattr(completion, 'model') else model
+        logger.info(f"Actual model used: {actual_model}")
 
         # Process the response
         parsed_data = parse_llm_json(raw_response)
         
         if "error" in parsed_data:
-            return {"model": model, "error": parsed_data["error"]}
+            return {"model": actual_model, "error": parsed_data["error"]}
         
         return {
-            "model": model, 
+            "model": actual_model, 
             "response": parsed_data.get("response", "No content provided.")
         }
         

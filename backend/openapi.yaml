@@ -21,6 +21,12 @@ paths:
         as they complete. Returns Server-Sent Events (SSE) with each model's response.
         
         **Special Model Types:**
+        - **Google Direct API Models**: Any model identifier starting with "google-direct/" 
+          bypasses OpenRouter and calls Google's Gemini API directly. These are free-tier models:
+          1. Extracts the model name (e.g., "gemini-2.0-flash-exp")
+          2. Calls Google Gemini API directly using the project's GEMINI_API_KEY
+          3. Returns the response from Google's API
+          
         - **YellowCake Models**: Any model identifier containing "yellowcake" (case-insensitive) 
           triggers special URL extraction and web scraping functionality. The system will:
           1. Extract and validate URLs from the prompt
@@ -45,6 +51,14 @@ paths:
                     - "openai/gpt-3.5-turbo"
                     - "anthropic/claude-3-haiku"
                     - "google/gemini-pro"
+              withGoogleDirect:
+                summary: Including Google Direct API model
+                value:
+                  prompt: "Explain quantum computing in simple terms"
+                  models:
+                    - "openai/gpt-4"
+                    - "google-direct/gemini-2.0-flash-exp"
+                    - "anthropic/claude-3-sonnet"
               withYellowCake:
                 summary: Mixed LLMs with YellowCake scraping
                 value:
@@ -70,6 +84,11 @@ paths:
                     data: {"model": "openai/gpt-3.5-turbo", "response": "The capital of France is Paris."}
                     
                     data: {"model": "anthropic/claude-3-haiku", "response": "Paris is the capital of France."}
+                    
+                googleDirectResponse:
+                  summary: Google Direct API response
+                  value: |
+                    data: {"model": "Google Gemini (gemini-2.0-flash-exp)", "response": "Quantum computing uses quantum mechanics principles..."}
                     
                 yellowCakeResponse:
                   summary: YellowCake scraping response
@@ -99,6 +118,7 @@ paths:
       description: |
         Returns a list of all available LLM models that can be used with the /compare endpoint.
         This includes models from OpenRouter (OpenAI, Anthropic, Google, Meta, Mistral, DeepSeek, Microsoft, etc.),
+        Google Gemini models via direct API integration (free tier),
         the special "openrouter/auto" option that automatically selects the best model,
         and the YellowCake API for web scraping automation.
       operationId: listModels
@@ -147,6 +167,10 @@ paths:
                     value: "microsoft/phi-3-mini-128k-instruct:free"
                   - label: "OpenRouter Auto"
                     value: "openrouter/auto"
+                  - label: "Google Gemini 2.0 Flash (Free - Direct API)"
+                    value: "google-direct/gemini-2.0-flash-exp"
+                  - label: "Google Gemini 1.5 Flash (Free - Direct API)"
+                    value: "google-direct/gemini-1.5-flash"
                   - label: "YellowCake API (For Automation)"
                     value: "YellowCake"
 

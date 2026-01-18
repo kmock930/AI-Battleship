@@ -9,3 +9,6 @@
 
 # Documentation
 Refer to `openapi.yaml`.
+
+# Execution
+Run `python main.py`.

@@ -96,6 +96,8 @@ def list_models():
         {"label": "Mistral 7B Instruct (Free)", "value": "mistralai/mistral-7b-instruct:free"},
         {"label": "Phi 3 Mini 128k Instruct (Free)", "value": "microsoft/phi-3-mini-128k-instruct:free"},
         {"label": "OpenRouter Auto", "value": "openrouter/auto"},
+        {"label": "Google Gemini 2.0 Flash (Free - Direct API)", "value": "google-direct/gemini-2.0-flash-exp"},
+        {"label": "Google Gemini 1.5 Flash (Free - Direct API)", "value": "google-direct/gemini-1.5-flash"},
         {"label": "YellowCake API (For Automation)", "value": "YellowCake"}  # Placeholder for custom models
     ]}
 

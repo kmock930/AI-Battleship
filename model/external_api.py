@@ -94,7 +94,7 @@ def call_yellowcake(url: str, user_prompt: str):
             raise ValueError("YellowCake API key not found in environment variables.")
     
         # Construct the request for YellowCake API
-        from constants import YELLOWCAKE_URL
+        from .constants import YELLOWCAKE_URL
         import json
         import re
 
