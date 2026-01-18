@@ -8,4 +8,5 @@ Build a web app that runs the same user created task across multiple agentic AI 
 2. Prepare a `.env.local` at the Next project inside `frontend/` directory, based on `.env.example`, for local frontend debugging.
 
 ## Prototype ‼️
-[Preview](./frontend/AI%20Battleship%20⚔️%20PREVIEW.pdf)
+### Preview
+<img src=frontend\Preview.png>
