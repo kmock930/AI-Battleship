@@ -77,7 +77,6 @@ def call_yellowcake(url: str, user_prompt: str):
     import requests
     import os
     load_dotenv()
-    MODEL_NAME = "YELLOWCAKE-API"
 
     GEMINI_VALIDATION_PROMPT = ""
     with open(CURR_DIR / "PROMPT_GEMINI_VERIFY_PROMPT.txt", "r") as f:
@@ -94,7 +93,11 @@ def call_yellowcake(url: str, user_prompt: str):
             raise ValueError("YellowCake API key not found in environment variables.")
     
         # Construct the request for YellowCake API
-        from .constants import YELLOWCAKE_URL
+        try:
+            from constants import YELLOWCAKE_URL
+        except ImportError:
+            # Probably from main.py which is in another durectory
+            from .constants import YELLOWCAKE_URL
         import json
         import re
 
