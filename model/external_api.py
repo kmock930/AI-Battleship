@@ -6,6 +6,7 @@ def get_valid_urls(text: str) -> list[str]:
     Parses URLs from text and validates them via HTTP requests.
     """
     import re
+    import os
     import requests
     # Regex breakdown:
     # 1. Look for http:// or https:// (optional)
@@ -19,7 +20,10 @@ def get_valid_urls(text: str) -> list[str]:
     raw_urls = re.findall(url_pattern, text, re.IGNORECASE)
 
     # Ask Gemini to further parse URLs from prompt
+    global CURR_DIR
     base_prompt = ""
+    if not os.listdir(CURR_DIR).__contains__("PROMPT_GEMINI_URL_PARSING.txt"):
+        CURR_DIR = Path(__file__).parent.parent / "model" # assuming from 'backend' dir
     with open(CURR_DIR / "PROMPT_GEMINI_URL_PARSING.txt", "r") as f:
         base_prompt = f.read()
     try:
@@ -73,6 +77,7 @@ def call_yellowcake(url: str, user_prompt: str):
     import requests
     import os
     load_dotenv()
+    MODEL_NAME = "YELLOWCAKE-API"
 
     GEMINI_VALIDATION_PROMPT = ""
     with open(CURR_DIR / "PROMPT_GEMINI_VERIFY_PROMPT.txt", "r") as f:

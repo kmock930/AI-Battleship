@@ -1,6 +1,12 @@
 import os
-import json
 import asyncio  # Needed for the timeout logic
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+BACKEND_DIR = Path(__file__).parent.parent
+sys.path.insert(0, str(BACKEND_DIR))
+
 from openai import AsyncOpenAI
 from dotenv import load_dotenv
 from utils.parser import parse_llm_json
@@ -8,6 +14,11 @@ from utils.logger import get_logger
 
 # Initialize logger
 logger = get_logger("OpenRouterClient")
+
+# Import YellowCake prompt
+PROJECT_ROOT = BACKEND_DIR.parent
+sys.path.append(str(PROJECT_ROOT))
+from model.external_api import get_valid_urls, call_yellowcake
 
 # Load environment variables
 load_dotenv()
@@ -33,6 +44,27 @@ async def ask_openrouter(user_input, model="openai/gpt-oss-20b:free"):
     Returns model ID and parsed response or error.
     """
     logger.info(f"Initiating async call for model: {model}")
+
+    # Override for YellowCake model
+    if "yellowcake" in model.lower():
+        logger.info("Detected YellowCake model. Processing differently.")
+        # Extract URLs from user input
+        urls = get_valid_urls(user_input)
+        if not urls:
+            logger.warning("No valid URLs found in user input for YellowCake.")
+            return {"model": model, "error": "No valid URLs found in the prompt."}
+        
+        # For simplicity, use the first valid URL
+        url_to_use = urls[0]
+        logger.info(f"Calling YellowCake for URL: {url_to_use}")
+        
+        # Call YellowCake API
+        yellowcake_response = call_yellowcake(url_to_use, user_input)
+        
+        return {
+            "model": model,
+            "response": yellowcake_response
+        }
     
     system_instruction = (
         "Task: Respond ONLY with valid JSON.\n"
